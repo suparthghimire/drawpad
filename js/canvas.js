@@ -1,9 +1,6 @@
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
-console.log(canvas.parentElement.clientHeight);
-console.log(canvas.parentElement.clientWidth);
-
 canvas.height = canvas.parentElement.clientHeight;
 canvas.width = canvas.parentElement.clientWidth;
 
@@ -11,6 +8,7 @@ canvas.width = canvas.parentElement.clientWidth;
 
 const pencil = document.querySelector("#tool-pencil");
 const eraser = document.querySelector("#tool-eraser");
+const codeSegment = document.querySelector("#tool-code-segment");
 const shapes = document.querySelector("#tool-shapes");
 const line = document.querySelector("#shape-line");
 const rectangle = document.querySelector("#shape-rectangle");
@@ -29,14 +27,8 @@ const brush_size_custom = document.querySelector(".size-ip");
 const add_size_btn = document.querySelector(".add-size");
 
 canvas.style.backgroundColor = "white";
-console.log(canvas.style.backgroundColor);
 
 class UI {
-  constructor() {
-    this.undoStack = [];
-    this.undoLimit = 5;
-  }
-
   static change_brush_size(size) {
     if (size != "*") ctx.lineWidth = size;
     else ctx.lineWidth = brush_size_custom.value;
@@ -54,8 +46,6 @@ class UI {
   }
   static takeSnapshot() {
     this.currentSnap = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    if (this.undoStack.length >= this.undoLimit) this.undoStack.shift();
-    this.undoStack.push(this.currentSnap);
   }
 
   static setSnapshot() {
@@ -98,7 +88,6 @@ class UI {
 
         UI.drawLine(startPosition, endPosition);
       } else if (rectangle.checked) {
-        console.log("Rectangle");
         UI.setSnapshot();
         let startPosition = this.startMousePos;
 
@@ -112,9 +101,7 @@ class UI {
         let endPosition = { x: e.clientX - 153, y: e.clientY - 153 };
 
         UI.drawCircle(startPosition, endPosition);
-        console.log("Circle");
       } else if (triangle.checked) {
-        console.log("triangle");
         UI.setSnapshot();
         let startPosition = this.startMousePos;
 
@@ -156,14 +143,7 @@ class UI {
     let ySq =
       (startPosition.y - endPosition.y) * (startPosition.y - endPosition.y);
     let distance = Math.sqrt(xSq + ySq);
-    ctx.arc(
-      startPosition.x + distance,
-      startPosition.y + distance,
-      distance,
-      0,
-      2 * Math.PI,
-      false
-    );
+    ctx.arc(startPosition.x, startPosition.y, distance, 0, 2 * Math.PI, false);
     ctx.stroke();
   }
   static drawTriangle(startPosition, endPosition) {
@@ -180,14 +160,103 @@ class UI {
   }
 }
 
-// function continueStroke = (newPoint) {
-//   ctx.beginPath();
-//   ctx.moveTo(latestPoint[0], latestPoint[1]);
-//   ctx.strokeStyle = "red";
-//   ctx.lineWidth = 20;
-//   ctx.lineCap = "round";
-//   ctx.lineJoin
-// }
+class TextBoxes {
+  static createCodeSegment() {
+    TextBoxes.createCodeSegmentTextArea();
+  }
+
+  static removeTextBox(el) {
+    el.remove();
+  }
+
+  static createCodeSegmentTextArea() {
+    let codeSegmentContainer = document.createElement("div");
+    codeSegmentContainer.classList.add("code-segment-container");
+
+    let codeSegmentHeader = document.createElement("div");
+    codeSegmentHeader.classList.add("code-segment-header");
+
+    let codeSegmentHeaderStyle_red = document.createElement("span");
+    codeSegmentHeaderStyle_red.classList.add(
+      "code-segment-header-style",
+      "red"
+    );
+
+    let codeSegmentHeaderStyle_yellow = document.createElement("span");
+    codeSegmentHeaderStyle_yellow.classList.add(
+      "code-segment-header-style",
+      "yellow"
+    );
+    let codeSegmentHeaderStyle_green = document.createElement("span");
+    codeSegmentHeaderStyle_green.classList.add(
+      "code-segment-header-style",
+      "green"
+    );
+
+    let textArea = document.createElement("textarea");
+    textArea.classList.add("code-segment-txt");
+    textArea.cols = 40;
+    textArea.rows = 10;
+    textArea.placeholder = "//Enter Your Code Here";
+
+    codeSegmentHeader.appendChild(codeSegmentHeaderStyle_red);
+    codeSegmentHeader.appendChild(codeSegmentHeaderStyle_yellow);
+    codeSegmentHeader.appendChild(codeSegmentHeaderStyle_green);
+    codeSegmentContainer.appendChild(codeSegmentHeader);
+    codeSegmentContainer.appendChild(textArea);
+
+    document
+      .querySelector("#code-segment-item")
+      .appendChild(codeSegmentContainer);
+
+    codeSegmentHeaderStyle_red.addEventListener("click", () => {
+      TextBoxes.removeTextBox(
+        codeSegmentHeaderStyle_red.parentElement.parentElement
+      );
+    });
+
+    const codeSegmentHeders = document.querySelectorAll(".code-segment-header");
+    codeSegmentHeders.forEach((codeSegmentHeder) => {
+      codeSegmentHeder.addEventListener("mousedown", (e) => {
+        TextBoxes.dragTextBoxMouseDown(e, codeSegmentHeder);
+      });
+
+      codeSegmentHeder.addEventListener("mouseup", (e) => {
+        TextBoxes.dragTextBoxMouseUp(e, codeSegmentHeder);
+      });
+
+      codeSegmentHeder.addEventListener("mousemove", (e) => {
+        TextBoxes.dragTextBoxMouseMove(e, codeSegmentHeder);
+      });
+    });
+  }
+
+  static dragTextBoxMouseDown(e, el) {
+    this.drag = true;
+    this.prevX = e.clientX;
+    this.prevY = e.clientY;
+  }
+  static dragTextBoxMouseUp(e, el) {
+    this.drag = false;
+  }
+  static dragTextBoxMouseMove(e, el) {
+    if (!this.drag) return;
+
+    this.newX = this.prevX - e.clientX;
+    this.newY = this.prevY - e.clientY;
+
+    console.log("Prev:", this.prevX, this.prevY);
+    console.log("New:", this.newX, this.newY);
+
+    const rect = el.getBoundingClientRect();
+    console.log(el);
+    el.parentElement.style.left = el.offsetLeft + rect.left - this.newX + "px";
+    el.parentElement.style.top = el.offsetTop + rect.top - this.newY + "px";
+
+    this.prevX = e.clientX;
+    this.prevY = e.clientY;
+  }
+}
 
 canvas.addEventListener("mousemove", UI.draw);
 canvas.addEventListener("mousedown", UI.startPos);
@@ -195,6 +264,8 @@ canvas.addEventListener("mouseup", UI.endPos);
 
 clearCanvas.addEventListener("click", UI.clearCanvas);
 canvasBg.addEventListener("change", UI.changeCanvasBg);
+
+codeSegment.addEventListener("click", TextBoxes.createCodeSegment);
 
 brush_size_5.addEventListener("click", () => {
   brush_size_5.classList.add("size-selected");

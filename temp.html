@@ -5,10 +5,173 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .code-segment-container {
+            position: absolute;
+            background: var(--clr-primary-dark);
+            border-radius: 5px;
+            /* top: 0; */
+            z-index: 900;
+            /* top: 0;
+            left: 0; */
+            /* left: 845px; */
+        }
+        
+        .code-segment-header {
+            height: 40px;
+            background: black;
+            border-radius: 5px 5px 0 0;
+            padding: 10px;
+            display: flex;
+            position: relative;
+            align-items: center;
+            gap: 10px;
+            top: 0;
+            z-index: 9999;
+        }
+        
+        .code-segment-header-style {
+            width: 15px;
+            height: 15px;
+            display: block;
+            border-radius: 50%;
+            background-color: white;
+        }
+        
+        .red {
+            background-color: rgb(228, 70, 70);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .red::after {
+            position: absolute;
+            content: "";
+            top: 0;
+            left: 0;
+            background-color: rgb(228, 70, 70);
+            background-color: rgb(253, 133, 133);
+            border-radius: 50%;
+            width: 100%;
+            animation: pulse 5s linear infinite alternate;
+            height: 100%;
+        }
+        
+        .yellow {
+            background-color: rgb(250, 217, 29);
+        }
+        
+        .green {
+            background-color: rgb(154, 250, 29);
+        }
+        
+        .code-segment-txt {
+            background: #2a2a2a;
+            border: 0;
+            color: white;
+            border-radius: 5px;
+            position: relative;
+            padding: 10px;
+        }
+        
+        .code-segment-txt:focus {
+            outline: 0;
+        }
+    </style>
 </head>
 
 <body>
-    <img src="https://thispersondoesnotexist.com/image" alt="">
+
+    <div class="code-segment-container" id="1">
+        <div class="code-segment-header">
+            <div class="code-segment-header-style red"></div>
+            <div class="code-segment-header-style yellow"></div>
+            <div class="code-segment-header-style green"></div>
+        </div>
+        <textarea class="code-segment-txt" rows="10" cols="10"></textarea>
+    </div>
+
+
+    <div class="code-segment-container top-100" id="1">
+        <div class="code-segment-header">
+            <div class="code-segment-header-style red"></div>
+            <div class="code-segment-header-style yellow"></div>
+            <div class="code-segment-header-style green"></div>
+        </div>
+        <textarea class="code-segment-txt" rows="10" cols="10"></textarea>
+    </div>
+    <div class="code-segment-container top-200" id="1">
+        <div class="code-segment-header">
+            <div class="code-segment-header-style red"></div>
+            <div class="code-segment-header-style yellow"></div>
+            <div class="code-segment-header-style green"></div>
+        </div>
+        <textarea class="code-segment-txt" rows="10" cols="10"></textarea>
+    </div>
 </body>
+<script>
+    class DragEl {
+        static mousedown(el, e) {
+            this.drag = true;
+            this.prevX = e.clientX;
+            this.prevY = e.clientY;
+
+
+        }
+
+        static mouseup(el, e) {
+            this.drag = false;
+        }
+
+        static mousemove(el, e) {
+
+            if (!this.drag) return;
+
+            this.newX = this.prevX - e.clientX;
+            this.newY = this.prevY - e.clientY;
+
+            console.log("Prev:", this.prevX, this.prevY);
+            console.log("New:", this.newX, this.newY);
+
+            const rect = el.getBoundingClientRect();
+            console.log(el)
+            el.parentElement.style.left = el.offsetLeft + rect.left - this.newX + 'px';
+            el.parentElement.style.top = el.offsetTop + rect.top - this.newY + 'px';
+
+
+            this.prevX = e.clientX;
+            this.prevY = e.clientY;
+        }
+    }
+
+    const els = document.querySelectorAll('.code-segment-header');
+
+
+    els.forEach(el => {
+        el.addEventListener('mousedown', (e) => {
+            DragEl.mousedown(el, e)
+        });
+
+        el.addEventListener('mouseup', (e) => {
+            DragEl.mouseup(el, e)
+        });
+
+
+
+        el.addEventListener('mousemove', (e) => {
+            DragEl.mousemove(el, e)
+        });
+
+    })
+</script>
 
 </html>

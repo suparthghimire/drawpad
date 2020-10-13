@@ -3,6 +3,7 @@
     padding: 0;
     font-family: "Raleway", sans-serif;
     box-sizing: border-box;
+    user-select: none;
 }
 
 :root {
@@ -219,6 +220,10 @@ main {
     position: relative;
 }
 
+#code-segment-item {
+    position: static;
+}
+
 .tool-label {
     width: 100%;
     height: 100%;
@@ -264,6 +269,89 @@ input[type="color"]:focus+.tool-label .tool-name,
 input[type="color"] {
     opacity: 0;
     position: absolute;
+}
+
+.code-segment-container {
+    position: absolute;
+    background: var(--clr-primary-dark);
+    border-radius: 5px;
+    /* top: 0; */
+    z-index: 900;
+    top: 0;
+    left: 0;
+    /* left: 845px; */
+}
+
+.code-segment-header {
+    height: 40px;
+    background: black;
+    border-radius: 5px 5px 0 0;
+    padding: 10px;
+    display: flex;
+    position: relative;
+    align-items: center;
+    gap: 10px;
+    top: 0;
+    z-index: 9999;
+}
+
+.code-segment-header-style {
+    width: 15px;
+    height: 15px;
+    display: block;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.red {
+    background-color: rgb(228, 70, 70);
+    cursor: pointer;
+    position: relative;
+}
+
+.red::after {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    background-color: rgb(228, 70, 70);
+    background-color: rgb(253, 133, 133);
+    border-radius: 50%;
+    width: 100%;
+    animation: pulse 5s linear infinite alternate;
+    height: 100%;
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(0.5);
+        opacity: 0.2;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.yellow {
+    background-color: rgb(250, 217, 29);
+}
+
+.green {
+    background-color: rgb(154, 250, 29);
+}
+
+.code-segment-txt {
+    background: var(--clr-primary-dark);
+    border: 0;
+    color: white;
+    border-radius: 5px;
+    position: relative;
+    padding: 10px;
+}
+
+.code-segment-txt:focus {
+    outline: 0;
 }
 
 .artboard-details {
