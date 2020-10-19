@@ -9,6 +9,7 @@ canvas.width = canvas.parentElement.clientWidth;
 const pencil = document.querySelector("#tool-pencil");
 const eraser = document.querySelector("#tool-eraser");
 const codeSegment = document.querySelector("#tool-code-segment");
+const font = document.querySelector("#tool-font");
 const shapes = document.querySelector("#tool-shapes");
 const line = document.querySelector("#shape-line");
 const rectangle = document.querySelector("#shape-rectangle");
@@ -160,101 +161,343 @@ class UI {
   }
 }
 
-class TextBoxes {
-  static createCodeSegment() {
-    TextBoxes.createCodeSegmentTextArea();
+class TextArea {
+  constructor() {
+    this.resize = false;
   }
 
-  static removeTextBox(el) {
-    el.remove();
+  mouseDownDrag(e, el) {
+    console.log(this.resize);
+    this.resize = !this.resize;
+    console.log(this.resize);
+
+    console.log("Drag");
+    let selectedSide = e.target;
+    let textBoxBound = el;
+
+    let prevX = e.clientX;
+    let prevY = e.clientY;
+
+    window.addEventListener("mousemove", mouseMove);
+    window.addEventListener("mouseup", mouseUp);
+    let resizeStatus = this.resize;
+
+    function mouseMove(e) {
+      console.log(this.resize);
+      if (!resizeStatus) {
+        let newX = e.clientX;
+        let newY = e.clientY;
+        const rect = textBoxBound.getBoundingClientRect();
+
+        textBoxBound.style.left = rect.left - (prevX - newX) + "px";
+        textBoxBound.style.top = rect.top - (prevY - newY) + "px";
+
+        prevX = newX;
+        prevY = newY;
+      }
+    }
+
+    function mouseUp() {
+      window.removeEventListener("mousemove", mouseMove);
+      window.removeEventListener("mouseup", mouseUp);
+    }
+    return 0;
   }
 
-  static createCodeSegmentTextArea() {
-    let codeSegmentContainer = document.createElement("div");
-    codeSegmentContainer.classList.add("code-segment-container");
+  mouseDownResize(e) {
+    this.resize = false;
+    console.log("Resize");
 
-    let codeSegmentHeader = document.createElement("div");
-    codeSegmentHeader.classList.add("code-segment-header");
+    let selectedSide = e.target;
+    let textBoxBound = e.target.parentElement;
 
-    let codeSegmentHeaderStyle_red = document.createElement("span");
-    codeSegmentHeaderStyle_red.classList.add(
-      "code-segment-header-style",
-      "red"
+    let prevX = e.clientX;
+    let prevY = e.clientY;
+
+    window.addEventListener("mousemove", mouseMove);
+    window.addEventListener("mouseup", mouseUp);
+
+    function mouseMove(e) {
+      let newX = e.clientX;
+      let newY = e.clientY;
+
+      const rect = textBoxBound.getBoundingClientRect();
+      if (selectedSide.classList.contains("bottom-right")) {
+        textBoxBound.style.width = rect.width - (prevX - newX) + "px";
+        textBoxBound.style.height = rect.height - (prevY - newY) + "px";
+      } else if (selectedSide.classList.contains("bottom-left")) {
+        textBoxBound.style.width = rect.width + (prevX - newX) + "px";
+        textBoxBound.style.height = rect.height - (prevY - newY) + "px";
+        textBoxBound.style.left = rect.left - (prevX - newX) + "px";
+      } else if (selectedSide.classList.contains("top-right")) {
+        textBoxBound.style.width = rect.width - (prevX - newX) + "px";
+        textBoxBound.style.height = rect.height + (prevY - newY) + "px";
+        textBoxBound.style.top = rect.top - (prevY - newY) + "px";
+      } else if (selectedSide.classList.contains("top-left")) {
+        textBoxBound.style.width = rect.width + (prevX - newX) + "px";
+        textBoxBound.style.height = rect.height + (prevY - newY) + "px";
+        textBoxBound.style.top = rect.top - (prevY - newY) + "px";
+        textBoxBound.style.left = rect.left - (prevX - newX) + "px";
+      } else if (selectedSide.classList.contains("left-side-center")) {
+        textBoxBound.style.width = rect.width + (prevX - newX) + "px";
+        textBoxBound.style.left = rect.left - (prevX - newX) + "px";
+      } else if (selectedSide.classList.contains("right-side-center")) {
+        textBoxBound.style.width = rect.width - (prevX - newX) + "px";
+      } else if (selectedSide.classList.contains("top-center")) {
+        textBoxBound.style.height = rect.height + (prevY - newY) + "px";
+        textBoxBound.style.top = rect.top - (prevY - newY) + "px";
+      } else if (selectedSide.classList.contains("bottom-center")) {
+        textBoxBound.style.height = rect.height - (prevY - newY) + "px";
+      }
+      prevX = newX;
+      prevY = newY;
+    }
+
+    function mouseUp() {
+      window.removeEventListener("mousemove", mouseMove);
+      window.removeEventListener("mouseup", mouseUp);
+    }
+    return 0;
+  }
+  removeElement(element) {
+    element.remove();
+  }
+}
+
+class TextAreaTextBox extends TextArea {
+  createTextArea(e) {
+    this.textAreaDiv = document.createElement("div");
+    this.textAreaDiv.classList.add("text-area-container");
+    this.textarea = document.createElement("textarea");
+    this.textarea.classList.add("textarea-textbox");
+    this.textarea.rows = 30;
+    this.textarea.cols = 30;
+
+    this.removeBtn = document.createElement("span");
+    this.removeBtn.classList.add("remove-btn-text-tool");
+    // resizers
+    this.topLeftResize = document.createElement("span");
+    this.topLeftResize.classList.add(
+      "resizer",
+      "top-left",
+      "cursor-diagonal-right"
     );
 
-    let codeSegmentHeaderStyle_yellow = document.createElement("span");
-    codeSegmentHeaderStyle_yellow.classList.add(
-      "code-segment-header-style",
-      "yellow"
-    );
-    let codeSegmentHeaderStyle_green = document.createElement("span");
-    codeSegmentHeaderStyle_green.classList.add(
-      "code-segment-header-style",
-      "green"
+    this.topCenterResize = document.createElement("span");
+    this.topCenterResize.classList.add(
+      "resizer",
+      "top-center",
+      "cursor-horizontal"
     );
 
-    let textArea = document.createElement("textarea");
-    textArea.classList.add("code-segment-txt");
-    textArea.cols = 40;
-    textArea.rows = 10;
-    textArea.placeholder = "//Enter Your Code Here";
+    this.topRightResize = document.createElement("span");
+    this.topRightResize.classList.add(
+      "resizer",
+      "top-right",
+      "cursor-diagonal-left"
+    );
 
-    codeSegmentHeader.appendChild(codeSegmentHeaderStyle_red);
-    codeSegmentHeader.appendChild(codeSegmentHeaderStyle_yellow);
-    codeSegmentHeader.appendChild(codeSegmentHeaderStyle_green);
-    codeSegmentContainer.appendChild(codeSegmentHeader);
-    codeSegmentContainer.appendChild(textArea);
+    this.leftSideCenterResize = document.createElement("span");
+    this.leftSideCenterResize.classList.add(
+      "resizer",
+      "left-side-center",
+      "cursor-vertical"
+    );
+
+    this.rightSideCenterResize = document.createElement("span");
+    this.rightSideCenterResize.classList.add(
+      "resizer",
+      "right-side-center",
+      "cursor-vertical"
+    );
+
+    this.bottomRightResize = document.createElement("span");
+    this.bottomRightResize.classList.add(
+      "resizer",
+      "bottom-right",
+      "cursor-diagonal-right"
+    );
+
+    this.bottomCenterResize = document.createElement("span");
+    this.bottomCenterResize.classList.add(
+      "resizer",
+      "bottom-center",
+      "cursor-horizontal"
+    );
+
+    this.bottomLeftResize = document.createElement("span");
+    this.bottomLeftResize.classList.add(
+      "resizer",
+      "bottom-left",
+      "cursor-diagonal-left"
+    );
+
+    this.textAreaDiv.appendChild(this.textarea);
+    this.textAreaDiv.appendChild(this.removeBtn);
+    this.textAreaDiv.appendChild(this.topLeftResize);
+    this.textAreaDiv.appendChild(this.topCenterResize);
+    this.textAreaDiv.appendChild(this.topRightResize);
+    this.textAreaDiv.appendChild(this.leftSideCenterResize);
+    this.textAreaDiv.appendChild(this.rightSideCenterResize);
+    this.textAreaDiv.appendChild(this.bottomRightResize);
+    this.textAreaDiv.appendChild(this.bottomCenterResize);
+    this.textAreaDiv.appendChild(this.bottomLeftResize);
+
+    this.textAreaDiv.style.left = "200px";
+    this.textAreaDiv.style.top = "220px";
+
+    document.body.appendChild(this.textAreaDiv);
+
+    document.querySelectorAll(".text-area-container").forEach((textArea) => {
+      textArea.addEventListener("mousedown", (e) => {
+        this.mouseDownDrag(e, textArea);
+      });
+    });
+
+    const resizers = document.querySelectorAll(".resizer");
+    resizers.forEach((resizer) => {
+      resizer.addEventListener("mousedown", (e) => {
+        this.mouseDownResize(e);
+      });
+    });
+
+    this.removeBtn.addEventListener("click", () => {
+      this.removeElement(this.removeBtn.parentElement);
+    });
+  }
+}
+
+class CodeSegment extends TextArea {
+  createTextArea(e) {
+    this.codeSegmentContainer = document.createElement("div");
+    this.codeSegmentContainer.classList.add("code-segment-container");
+
+    this.codeSegmentHeader = document.createElement("div");
+    this.codeSegmentHeader.classList.add("code-segment-header");
+
+    this.codeSegmentHeaderButtons = document.createElement("div");
+    this.codeSegmentHeaderButtons.classList.add("code-segment-buttons");
+
+    this.codeSegmentBtn_red = document.createElement("span");
+    this.codeSegmentBtn_red.classList.add(
+      "code-segment-header-btn",
+      "code-segment-red"
+    );
+
+    this.codeSegmentBtn_yellow = document.createElement("span");
+    this.codeSegmentBtn_yellow.classList.add(
+      "code-segment-header-btn",
+      "code-segment-yellow"
+    );
+
+    this.codeSegmentBtn_green = document.createElement("span");
+    this.codeSegmentBtn_green.classList.add(
+      "code-segment-header-btn",
+      "code-segment-green"
+    );
+
+    this.codeSegmentHeaderButtons.appendChild(this.codeSegmentBtn_red);
+    this.codeSegmentHeaderButtons.appendChild(this.codeSegmentBtn_yellow);
+    this.codeSegmentHeaderButtons.appendChild(this.codeSegmentBtn_green);
+
+    this.codeSegmentHeader.appendChild(this.codeSegmentHeaderButtons);
+
+    this.textarea = document.createElement("textarea");
+    this.textarea.classList.add("code-segment-textarea");
+
+    this.topLeftResize = document.createElement("span");
+    this.topLeftResize.classList.add(
+      "resizer",
+      "top-left",
+      "cursor-diagonal-right"
+    );
+
+    this.topCenterResize = document.createElement("span");
+    this.topCenterResize.classList.add(
+      "resizer",
+      "top-center",
+      "cursor-horizontal"
+    );
+
+    this.topRightResize = document.createElement("span");
+    this.topRightResize.classList.add(
+      "resizer",
+      "top-right",
+      "cursor-diagonal-left"
+    );
+
+    this.leftSideCenterResize = document.createElement("span");
+    this.leftSideCenterResize.classList.add(
+      "resizer",
+      "left-side-center",
+      "cursor-vertical"
+    );
+
+    this.rightSideCenterResize = document.createElement("span");
+    this.rightSideCenterResize.classList.add(
+      "resizer",
+      "right-side-center",
+      "cursor-vertical"
+    );
+
+    this.bottomRightResize = document.createElement("span");
+    this.bottomRightResize.classList.add(
+      "resizer",
+      "bottom-right",
+      "cursor-diagonal-right"
+    );
+
+    this.bottomCenterResize = document.createElement("span");
+    this.bottomCenterResize.classList.add(
+      "resizer",
+      "bottom-center",
+      "cursor-horizontal"
+    );
+
+    this.bottomLeftResize = document.createElement("span");
+    this.bottomLeftResize.classList.add(
+      "resizer",
+      "bottom-left",
+      "cursor-diagonal-left"
+    );
+
+    this.codeSegmentContainer.appendChild(this.codeSegmentHeader);
+    this.codeSegmentContainer.appendChild(this.textarea);
+
+    this.codeSegmentContainer.appendChild(this.topLeftResize);
+    this.codeSegmentContainer.appendChild(this.topCenterResize);
+    this.codeSegmentContainer.appendChild(this.topRightResize);
+    this.codeSegmentContainer.appendChild(this.leftSideCenterResize);
+    this.codeSegmentContainer.appendChild(this.rightSideCenterResize);
+    this.codeSegmentContainer.appendChild(this.bottomRightResize);
+    this.codeSegmentContainer.appendChild(this.bottomCenterResize);
+    this.codeSegmentContainer.appendChild(this.bottomLeftResize);
+
+    this.codeSegmentContainer.style.left = "200px";
+    this.codeSegmentContainer.style.top = "220px";
+
+    document.body.appendChild(this.codeSegmentContainer);
 
     document
-      .querySelector("#code-segment-item")
-      .appendChild(codeSegmentContainer);
+      .querySelectorAll(".code-segment-container")
+      .forEach((codeSegment) => {
+        codeSegment.addEventListener("mousedown", (e) => {
+          this.mouseDownDrag(e, codeSegment);
+        });
+      });
 
-    codeSegmentHeaderStyle_red.addEventListener("click", () => {
-      TextBoxes.removeTextBox(
-        codeSegmentHeaderStyle_red.parentElement.parentElement
+    const resizers = document.querySelectorAll(".resizer");
+    resizers.forEach((resizer) => {
+      resizer.addEventListener("mousedown", (e) => {
+        this.mouseDownResize(e);
+      });
+    });
+
+    this.codeSegmentBtn_red.addEventListener("click", () => {
+      this.removeElement(
+        this.codeSegmentBtn_red.parentElement.parentElement.parentElement
       );
     });
-
-    const codeSegmentHeders = document.querySelectorAll(".code-segment-header");
-    codeSegmentHeders.forEach((codeSegmentHeder) => {
-      codeSegmentHeder.addEventListener("mousedown", (e) => {
-        TextBoxes.dragTextBoxMouseDown(e, codeSegmentHeder);
-      });
-
-      codeSegmentHeder.addEventListener("mouseup", (e) => {
-        TextBoxes.dragTextBoxMouseUp(e, codeSegmentHeder);
-      });
-
-      codeSegmentHeder.addEventListener("mousemove", (e) => {
-        TextBoxes.dragTextBoxMouseMove(e, codeSegmentHeder);
-      });
-    });
-  }
-
-  static dragTextBoxMouseDown(e, el) {
-    this.drag = true;
-    this.prevX = e.clientX;
-    this.prevY = e.clientY;
-  }
-  static dragTextBoxMouseUp(e, el) {
-    this.drag = false;
-  }
-  static dragTextBoxMouseMove(e, el) {
-    if (!this.drag) return;
-
-    this.newX = this.prevX - e.clientX;
-    this.newY = this.prevY - e.clientY;
-
-    console.log("Prev:", this.prevX, this.prevY);
-    console.log("New:", this.newX, this.newY);
-
-    const rect = el.getBoundingClientRect();
-    console.log(el);
-    el.parentElement.style.left = el.offsetLeft + rect.left - this.newX + "px";
-    el.parentElement.style.top = el.offsetTop + rect.top - this.newY + "px";
-
-    this.prevX = e.clientX;
-    this.prevY = e.clientY;
   }
 }
 
@@ -264,8 +507,16 @@ canvas.addEventListener("mouseup", UI.endPos);
 
 clearCanvas.addEventListener("click", UI.clearCanvas);
 canvasBg.addEventListener("change", UI.changeCanvasBg);
+font.addEventListener("click", (e) => {
+  const textAreaTextBox = new TextAreaTextBox();
+  textAreaTextBox.createTextArea(e);
+});
+// font.addEventListener("click", () => console.log("Tool Font"));
 
-codeSegment.addEventListener("click", TextBoxes.createCodeSegment);
+codeSegment.addEventListener("click", (e) => {
+  const codeSegment = new CodeSegment();
+  codeSegment.createTextArea(e);
+});
 
 brush_size_5.addEventListener("click", () => {
   brush_size_5.classList.add("size-selected");

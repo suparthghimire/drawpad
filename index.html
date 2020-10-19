@@ -26,8 +26,39 @@
                         <button class="btn-circular add-size">Add Size</button>
                     </div>
                 </div>
-                <div class="text-tools" id="text-tool"></div>
-                <div class="sticky-tools" id="sticky-tool"></div>
+                <div class="text-tools" id="text-tool">
+                    <div class="font-format">
+                        <select id="font-family" class="font-family">
+                            <option value="Raleway" selected>Raleway</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Times New Roman">Roboto</option>
+                            <option value="Times New Roman">Arial</option>
+                            <option value="Times New Roman">Billabong</option>
+                        </select>
+                        <select class="font-size" id="font-size">
+                            <option value="12" selected>12</option>
+                            <option value="18">16</option>
+                            <option value="22">22</option>
+                            <option value="36">36</option>
+                            <option value="48">48</option>
+                        </select>
+                    </div>
+                    <div class="text-style">
+                        <div class="btn-group-font-style">
+                            <button class="btn-text-format btn-bold">B</button>
+                            <button class="btn-text-format btn-italic">I</button>
+                            <button class="btn-text-format btn-underline">U</button>
+                        </div>
+                        <div class="btn-group-font-style">
+                            <button class="btn-text-format btn-left-align"><i class="fas fa-align-left"></i></button>
+                            <button class="btn-text-format btn-center-align"><i
+                                    class="fas fa-align-center"></i></button>
+                            <button class="btn-text-format btn-right-align"><i class="fas fa-align-right"></i></button>
+                            <button class="btn-text-format btn-justify-align"><i
+                                    class="fas fa-align-justify"></i></button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="meeting-options">
                 <div class="btn-group">
@@ -188,13 +219,8 @@
                         Code Segment
                     </p>
                 </label>
-
             </li>
-
-
-
-
-            <li class="tool-item">
+            <li class="tool-item" id="">
                 <input type="radio" class="tool-checked d-none" name="tool-radio" id="tool-font">
                 <label for="tool-font" class="tool-label">
                     <i class="fas fa-font"></i>

@@ -6,172 +6,314 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        #canvas {
+            border: 2px solid red;
+        }
+        
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
             width: 100vw;
-            overflow: hidden;
             height: 100vh;
         }
         
-        .code-segment-container {
+        .text-area-container {
             position: absolute;
-            background: var(--clr-primary-dark);
-            border-radius: 5px;
-            /* top: 0; */
-            z-index: 900;
-            /* top: 0;
-            left: 0; */
-            /* left: 845px; */
-        }
-        
-        .code-segment-header {
-            height: 40px;
-            background: black;
-            border-radius: 5px 5px 0 0;
-            padding: 10px;
+            /* border: 2px solid red; */
+            /* top: 40px;
+            left: 20px; */
+            width: 200px;
+            height: 200px;
             display: flex;
-            position: relative;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
-            top: 0;
-            z-index: 9999;
+            cursor: move;
+            /* border: 2px solid red; */
         }
         
-        .code-segment-header-style {
-            width: 15px;
-            height: 15px;
+        textarea {
+            resize: none;
+        }
+        
+        .textarea-textbox {
+            resize: none;
+            width: 90%;
+            height: 90%;
+            padding: 20px;
+            border: 2px solid #2a2a2a;
+            border-width: 2px;
+            font-family: 'Raleway', sans-serif;
+        }
+        
+        .temp {
+            /* width: 500px;
+            height: 500px; */
+            border: 2px solid red;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .resizer {
+            background: white;
+            background: #16f384;
+            border: 2px solid #ffffff;
             display: block;
             border-radius: 50%;
-            background-color: white;
-        }
-        
-        .red {
-            background-color: rgb(228, 70, 70);
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .red::after {
+            box-shadow: 0 0 6px 0 #2a2a2a27;
+            width: 20px;
+            height: 20px;
             position: absolute;
-            content: "";
+        }
+        
+        .top-left {
             top: 0;
             left: 0;
-            background-color: rgb(228, 70, 70);
-            background-color: rgb(253, 133, 133);
-            border-radius: 50%;
-            width: 100%;
-            animation: pulse 5s linear infinite alternate;
-            height: 100%;
         }
         
-        .yellow {
-            background-color: rgb(250, 217, 29);
+        .top-right {
+            top: 0;
+            right: 0;
         }
         
-        .green {
-            background-color: rgb(154, 250, 29);
+        .top-center {
+            top: 0;
+            left: calc(50%-20px);
         }
         
-        .code-segment-txt {
-            background: #2a2a2a;
-            border: 0;
-            color: white;
-            border-radius: 5px;
-            position: relative;
-            padding: 10px;
+        .left-side-center {
+            top: calc(50%-20px);
+            left: 0;
         }
         
-        .code-segment-txt:focus {
-            outline: 0;
+        .right-side-center {
+            top: calc(50%-20px);
+            right: 0;
+        }
+        
+        .bottom-left {
+            bottom: 0;
+            left: 0;
+        }
+        
+        .bottom-center {
+            bottom: 0;
+            left: calc(50%-20px);
+        }
+        
+        .bottom-right {
+            bottom: 0;
+            right: 0;
+        }
+        
+        .cursor-diagonal-left {
+            cursor: ne-resize;
+        }
+        
+        .cursor-diagonal-right {
+            cursor: nw-resize;
+        }
+        
+        .cursor-vertical {
+            cursor: e-resize;
+        }
+        
+        .cursor-horizontal {
+            cursor: n-resize;
         }
     </style>
 </head>
 
 <body>
-
-    <div class="code-segment-container" id="1">
-        <div class="code-segment-header">
-            <div class="code-segment-header-style red"></div>
-            <div class="code-segment-header-style yellow"></div>
-            <div class="code-segment-header-style green"></div>
-        </div>
-        <textarea class="code-segment-txt" rows="10" cols="10"></textarea>
-    </div>
+    <canvas id="canvas" height="800" width="800"></canvas>
 
 
-    <div class="code-segment-container top-100" id="1">
-        <div class="code-segment-header">
-            <div class="code-segment-header-style red"></div>
-            <div class="code-segment-header-style yellow"></div>
-            <div class="code-segment-header-style green"></div>
-        </div>
-        <textarea class="code-segment-txt" rows="10" cols="10"></textarea>
+
+    <div class="text-area-container">
+        <textarea class="textarea-textbox" name="" id="" cols="30" rows="10"></textarea>
+        <span class="resizer cursor-diagonal-right top-left"></span>
+        <span class="resizer cursor-horizontal top-center"></span>
+        <span class="resizer cursor-diagonal-left top-right"></span>
+        <span class="resizer cursor-vertical left-side-center"></span>
+        <span class="resizer cursor-vertical right-side-center"></span>
+        <span class="resizer cursor-diagonal-left bottom-left"></span>
+        <span class="resizer cursor-horizontal bottom-center"></span>
+        <span class="resizer cursor-diagonal-right bottom-right"></span>
     </div>
-    <div class="code-segment-container top-200" id="1">
-        <div class="code-segment-header">
-            <div class="code-segment-header-style red"></div>
-            <div class="code-segment-header-style yellow"></div>
-            <div class="code-segment-header-style green"></div>
-        </div>
-        <textarea class="code-segment-txt" rows="10" cols="10"></textarea>
-    </div>
+
+    <!-- <textarea name="" class="width" id="" cols="30" rows="10"></textarea> -->
+
 </body>
 <script>
-    class DragEl {
-        static mousedown(el, e) {
-            this.drag = true;
-            this.prevX = e.clientX;
-            this.prevY = e.clientY;
-
-
+    class Drag {
+        static getCanvasCoordinates(e) {
+            const x = e.clientX;
+            const y = e.clientY;
+            return {
+                x,
+                y
+            };
         }
-
-        static mouseup(el, e) {
+        static mouseDown(e) {
+            this.drag = true;
+            this.prevPos = Drag.getCanvasCoordinates(e);
+            Drag.createTextBox(this.prevPos);
+        }
+        static mouseup(e) {
             this.drag = false;
         }
-
-        static mousemove(el, e) {
+        static click(e) {
 
             if (!this.drag) return;
 
-            this.newX = this.prevX - e.clientX;
-            this.newY = this.prevY - e.clientY;
-
-            console.log("Prev:", this.prevX, this.prevY);
-            console.log("New:", this.newX, this.newY);
-
-            const rect = el.getBoundingClientRect();
-            console.log(el)
-            el.parentElement.style.left = el.offsetLeft + rect.left - this.newX + 'px';
-            el.parentElement.style.top = el.offsetTop + rect.top - this.newY + 'px';
+            let startPos = this.prevPos;
 
 
-            this.prevX = e.clientX;
-            this.prevY = e.clientY;
+            this.newX = e.clientX;
+            this.newY = e.clientY;
+
+            let xdis = (this.newX - startPos.x);
+            let ydis = (this.newY - startPos.y);
+
+
+            Drag.increaseColsRows(xdis, ydis);
+
         }
+        static createTextBox(startPos) {
+
+
+            this.textAreaDiv = document.createElement('div');
+            this.textAreaDiv.classList.add('text-area-container');
+
+            this.textarea = document.createElement('textarea');
+            this.textarea.classList.add('textarea-textbox');
+            this.textarea.innerText = "haha";
+            this.textarea.rows = 1;
+            this.textarea.cols = 1;
+
+
+            // resizers
+            this.topLeftResize = document.createElement('span');
+            this.topLeftResize.classList.add('resizer', 'top-left', 'cursor-diagonal-right');
+
+
+
+            this.topCenterResize = document.createElement('span');
+            this.topCenterResize.classList.add('resizer', 'top-center', 'cursor-horizontal');
+
+
+            this.topRightResize = document.createElement('span');
+            this.topRightResize.classList.add('resizer', 'top-right', 'cursor-diagonal-left');
+
+            this.leftSideCenterResize = document.createElement('span');
+            this.leftSideCenterResize.classList.add('resizer', 'left-side-center', 'cursor-vertical');
+
+
+            this.rightSideCenterResize = document.createElement('span');
+            this.rightSideCenterResize.classList.add('resizer', 'right-side-center', 'cursor-vertical');
+
+            this.bottomRightResize = document.createElement('span');
+            this.bottomRightResize.classList.add('resizer', 'bottom-right', 'cursor-diagonal-right');
+
+            this.bottomCenterResize = document.createElement('span');
+            this.bottomCenterResize.classList.add('resizer', 'bottom-center', 'cursor-horizontal');
+
+            this.bottomLeftResize = document.createElement('span');
+            this.bottomLeftResize.classList.add('resizer', 'bottom-left', 'cursor-diagonal-left');
+
+
+
+            this.textAreaDiv.appendChild(this.textarea);
+            this.textAreaDiv.appendChild(this.topLeftResize);
+            this.textAreaDiv.appendChild(this.topCenterResize);
+            this.textAreaDiv.appendChild(this.topRightResize);
+            this.textAreaDiv.appendChild(this.leftSideCenterResize);
+            this.textAreaDiv.appendChild(this.rightSideCenterResize);
+            this.textAreaDiv.appendChild(this.bottomRightResize);
+            this.textAreaDiv.appendChild(this.bottomCenterResize);
+            this.textAreaDiv.appendChild(this.bottomLeftResize);
+
+            document.body.appendChild(this.textAreaDiv);
+
+            this.textAreaDiv.style.top = startPos.y + 'px';
+            this.textAreaDiv.style.left = startPos.x + 'px';
+
+            document.querySelectorAll('.resizer').forEach((resizer) => {
+                resizer.addEventListener('mousedown', Drag.resizerMouseDown);
+                resizer.addEventListener('mousemove', (e) => {
+                    Drag.resizerMouseMove(e, resizer.parentElement)
+                });
+                resizer.addEventListener('mouseup', Drag.resizerMouseUp);
+            });
+        }
+        static resizerMouseUp(e) {
+            console.log("Mouse Up");
+
+            this.resizing = false;
+        }
+
+        static resizerMouseDown(e) {
+
+            console.log("Mouse Down");
+            this.resizing = true;
+            this.prevPosResize = Drag.getCanvasCoordinates(e);
+            this.selectedResizePosition = e.target;
+            console.log(this.selectedResizePosition)
+        }
+        static resizerMouseMove(e, el) {
+
+            if (!this.resizing) return;
+            console.log("Mouse Move");
+
+            if (this.selectedResizePosition.classList.contains('top-left')) {
+                console.log("top-left");
+            } else if (this.selectedResizePosition.classList.contains('top-center')) {
+                console.log("top-center");
+            } else if (this.selectedResizePosition.classList.contains('top-right')) {
+                console.log("top-right");
+            } else if (this.selectedResizePosition.classList.contains('left-side-center')) {
+                console.log("left-side-center");
+            } else if (this.selectedResizePosition.classList.contains('right-side-center')) {
+                console.log("right-side-center");
+            } else if (this.selectedResizePosition.classList.contains('bottom-left')) {
+                console.log("bottom-left");
+            } else if (this.selectedResizePosition.classList.contains('bottom-center')) {
+                console.log("bottom-center");
+            } else if (this.selectedResizePosition.classList.contains('bottom-right')) {
+                console.log("bottom-right");
+                let startPos = this.prevPos;
+
+
+                this.newX = e.clientX;
+                this.newY = e.clientY;
+
+                let xdis = (this.newX - startPos.x);
+                let ydis = (this.newY - startPos.y);
+                const rect = el.getBoundingClientRect();
+
+                el.style.width = rect.width + xdis + 'px';
+                el.style.height = rect.height + ydis + 'px';
+            }
+        }
+
+        static increaseColsRows(cols, rows) {
+            // this.textAreaDiv.style.height = rows;
+            // this.textAreaDiv.style.width = cols;
+        }
+
+        static resize(e, side) {
+
+        }
+
     }
 
-    const els = document.querySelectorAll('.code-segment-header');
+    canvas = document.querySelector('#canvas');
 
-
-    els.forEach(el => {
-        el.addEventListener('mousedown', (e) => {
-            DragEl.mousedown(el, e)
-        });
-
-        el.addEventListener('mouseup', (e) => {
-            DragEl.mouseup(el, e)
-        });
-
-
-
-        el.addEventListener('mousemove', (e) => {
-            DragEl.mousemove(el, e)
-        });
-
-    })
+    canvas.addEventListener('mousedown', Drag.mouseDown);
+    canvas.addEventListener('mouseup', Drag.mouseup);
+    canvas.addEventListener('click', Drag.click);
 </script>
 
 </html>
