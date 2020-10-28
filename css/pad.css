@@ -1112,3 +1112,28 @@ input[type="color"] {
         opacity: 0;
     }
 }
+
+.user-room-info {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    color: white;
+    padding: 10px 20px;
+}
+
+.user-info-room-item {
+    background: var(--clr-primary-dark);
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    animation: enter 2s ease-in-out 0s forwards;
+}
+
+@keyframes enter {
+    from {
+        transform: translateX(500px);
+    }
+    to {
+        transform: translateX(0);
+    }
+}

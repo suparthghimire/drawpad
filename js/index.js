@@ -1,5 +1,5 @@
 const generateRoomIdBtn = document.querySelector("#generate-room-id");
-const username = document.querySelector("#username");
+const username = document.querySelector("#uname");
 const roomIdInput = document.querySelector("#room-id");
 generateRoomIdBtn.addEventListener("click", (e) => {
   e.preventDefault();
@@ -19,3 +19,5 @@ copyBtn.addEventListener("click", (e) => {
   id.select();
   document.execCommand("copy");
 });
+
+setInterval(() => {}, 2000);
